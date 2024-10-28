@@ -1,14 +1,2 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { store } from './store';
-import ShoppingCart from './ShoppingCart';
-
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ShoppingCart />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('shopping-cart-root')
-);
+// Initialize the shared scope
+import('./bootstrap').catch(err => console.error('Error loading shopping cart:', err));

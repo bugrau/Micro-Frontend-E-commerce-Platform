@@ -1,0 +1,10 @@
+/* Import this at the top of Navigation.tsx instead of trying to load from common directory */
+@import url('./Navigation.css');
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Add any other common styles here */

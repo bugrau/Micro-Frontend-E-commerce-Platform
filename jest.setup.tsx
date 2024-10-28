@@ -1,29 +1,24 @@
-// Mock react-dom/test-utils first
-const React = require('react');
-jest.mock('react-dom/test-utils', () => ({
-  ...jest.requireActual('react-dom/test-utils'),
-  act: React.act
-}));
-
+/// <reference types="jest" />
+import React from 'react';
 import '@testing-library/jest-dom';
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import type { AnyAction } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, AnyAction } from '@reduxjs/toolkit';
+import { act } from 'react';
 
+// Configure @testing-library/react to use React.act
+import { configure } from '@testing-library/react';
+configure({ asyncUtilTimeout: 5000 });
+
+// Mock react-redux hooks
 export const mockDispatch = jest.fn();
 export const mockUseSelector = jest.fn();
 
-// Mock react-redux hooks but keep the original Provider
-jest.mock('react-redux', () => {
-  const originalModule = jest.requireActual('react-redux');
-  return {
-    __esModule: true,
-    ...originalModule,
-    useDispatch: () => mockDispatch,
-    useSelector: (selector: any) => mockUseSelector(selector)
-  };
-});
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => mockDispatch,
+  useSelector: (selector: any) => mockUseSelector(selector)
+}));
 
 interface ProductsState {
   items: any[];
@@ -47,30 +42,44 @@ const rootReducer = combineReducers({
 
 export type RootState = ReturnType<typeof rootReducer>;
 
+interface RenderOptions {
+  preloadedState?: Partial<RootState>;
+  store?: ReturnType<typeof configureStore>;
+}
+
 // Custom render function that wraps with Provider
-export const renderWithProviders = (
+export async function renderWithProviders(
   ui: React.ReactElement,
   {
-    preloadedState = {} as Partial<RootState>,
+    preloadedState,
     store = configureStore({
       reducer: rootReducer,
-      preloadedState
+      preloadedState: preloadedState as Partial<RootState>
     }),
     ...renderOptions
-  } = {}
-) => {
+  }: RenderOptions = {}
+) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return <Provider store={store}>{children}</Provider>;
   }
 
-  return {
-    store,
-    ...rtlRender(ui, { wrapper: Wrapper, ...renderOptions })
-  };
-};
+  let result: any;
+  await act(async () => {
+    result = {
+      store,
+      ...rtlRender(ui, { wrapper: Wrapper, ...renderOptions })
+    };
+  });
+
+  return result;
+}
 
 // Re-export testing library utilities
 export { screen, fireEvent };
 
-// Export act from React
-export const { act } = React;
+interface PreloadedState {
+  products?: any;
+  cart?: any;
+}
+
+const preloadedState: PreloadedState = {};

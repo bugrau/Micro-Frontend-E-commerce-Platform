@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer from './authSlice';
+import type { AuthState } from './authSlice';
 
 
 
@@ -16,14 +17,7 @@ export const store = configureStore({
 
 
 
-export type RootState = {
-  auth: {
-    user: { email: string; token: string } | null;
-    error: string | null;
-    isLoading: boolean;
-  };
-};
-
+export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 

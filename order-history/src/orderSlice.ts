@@ -1,75 +1,116 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface Product {
-  id: number;
+export interface OrderItem {
+  id: string;
   name: string;
   price: number;
   quantity: number;
+  image: string;
 }
 
 export interface Order {
-  id: number;
+  id: string;
   date: string;
-  products: Product[];
+  items: OrderItem[];
   total: number;
+  status: 'pending' | 'completed' | 'cancelled';
 }
 
 interface OrderState {
   orders: Order[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  isLoading: boolean;
   error: string | null;
 }
 
-const initialState: OrderState = {
-  orders: [],
-  status: 'idle',
-  error: null,
-};
+// Mock data with new product images
+const mockOrders: Order[] = [
+  {
+    id: 'ORD-2024-001',
+    date: '2024-03-15',
+    items: [
+      {
+        id: 'PROD-001',
+        name: 'MacBook Pro M2',
+        price: 1499.99,
+        quantity: 1,
+        image: 'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg?auto=compress&cs=tinysrgb&w=800'
+      },
+      {
+        id: 'PROD-002',
+        name: 'AirPods Pro',
+        price: 249.99,
+        quantity: 2,
+        image: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=800'
+      }
+    ],
+    total: 1999.97,
+    status: 'completed'
+  },
+  {
+    id: 'ORD-2024-002',
+    date: '2024-03-10',
+    items: [
+      {
+        id: 'PROD-003',
+        name: 'iPhone 15 Pro',
+        price: 999.99,
+        quantity: 1,
+        image: 'https://images.pexels.com/photos/5741605/pexels-photo-5741605.jpeg?auto=compress&cs=tinysrgb&w=800'
+      }
+    ],
+    total: 999.99,
+    status: 'completed'
+  },
+  {
+    id: 'ORD-2024-003',
+    date: '2024-03-20',
+    items: [
+      {
+        id: 'PROD-004',
+        name: 'Apple Watch Series 9',
+        price: 399.99,
+        quantity: 1,
+        image: 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=800'
+      },
+      {
+        id: 'PROD-005',
+        name: 'MagSafe Charger',
+        price: 39.99,
+        quantity: 2,
+        image: 'https://images.pexels.com/photos/4526407/pexels-photo-4526407.jpeg?auto=compress&cs=tinysrgb&w=800'
+      }
+    ],
+    total: 479.97,
+    status: 'pending'
+  }
+];
 
-export const fetchOrders = createAsyncThunk('orders/fetchOrders', async () => {
-  // In a real app, this would be an API call
-  const response = await new Promise<Order[]>((resolve) =>
-    setTimeout(() => resolve([
-      {
-        id: 1,
-        date: '2023-04-15',
-        products: [
-          { id: 1, name: 'Product 1', price: 19.99, quantity: 2 },
-          { id: 2, name: 'Product 2', price: 29.99, quantity: 1 },
-        ],
-        total: 69.97,
-      },
-      {
-        id: 2,
-        date: '2023-04-20',
-        products: [
-          { id: 3, name: 'Product 3', price: 39.99, quantity: 1 },
-        ],
-        total: 39.99,
-      },
-    ]), 1000)
-  );
-  return response;
-});
+const initialState: OrderState = {
+  orders: mockOrders,
+  isLoading: false,
+  error: null
+};
 
 const orderSlice = createSlice({
   name: 'orders',
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchOrders.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchOrders.fulfilled, (state, action: PayloadAction<Order[]>) => {
-        state.status = 'succeeded';
-        state.orders = action.payload;
-      })
-      .addCase(fetchOrders.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch orders';
-      });
-  },
+  reducers: {
+    fetchOrdersStart: (state) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    fetchOrdersSuccess: (state, action: PayloadAction<Order[]>) => {
+      state.orders = action.payload;
+      state.isLoading = false;
+      state.error = null;
+    },
+    fetchOrdersFailure: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    }
+  }
 });
 
+export const { fetchOrdersStart, fetchOrdersSuccess, fetchOrdersFailure } = orderSlice.actions;
+export type { OrderState };
 export default orderSlice.reducer;

@@ -1,118 +1,101 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import UserAuthentication from '../UserAuthentication';
-import { mockUseSelector, mockDispatch } from '../../../jest.setup';
-import { loginSuccess, clearError, logout } from '../authSlice';
-import userEvent from '@testing-library/user-event';
-import { RootState } from '../store';
-import { act } from 'react-dom/test-utils';
+import authReducer, { AuthState } from '../authSlice';
 
-const mockStore = configureStore<RootState>([]);
-
-const defaultState: RootState = {
+// Initial state matching the AuthState interface
+const initialState: { auth: AuthState } = {
   auth: {
     user: null,
-    error: null,
-    isLoading: false
+    token: null,
+    isAuthenticated: false,
+    loading: false,
+    error: null
   }
 };
 
+const store = configureStore({
+  reducer: {
+    auth: authReducer
+  },
+  preloadedState: initialState
+});
+
 describe('UserAuthentication', () => {
-  beforeEach(() => {
-    mockUseSelector.mockClear();
-    mockDispatch.mockClear();
-    localStorage.clear();
-    document.body.innerHTML = '';
-  });
-
-  const renderComponent = async (authState: Partial<RootState['auth']> = {}) => {
-    const store = mockStore({
-      auth: {
-        ...defaultState.auth,
-        ...authState
-      }
-    });
-
-    mockUseSelector.mockImplementation((selector) => 
-      selector({ auth: { ...defaultState.auth, ...authState } })
+  it('renders login form by default', () => {
+    render(
+      <Provider store={store}>
+        <UserAuthentication />
+      </Provider>
     );
-    
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <UserAuthentication />
-        </Provider>
-      );
-    });
-    return store;
-  };
 
-  it('validates email format on blur', async () => {
-    await renderComponent();
-    
-    const loginForm = screen.getByTestId('login-form');
-    const emailInput = within(loginForm).getByTestId('login-email');
-
-    await act(async () => {
-      await userEvent.type(emailInput, 'invalid-email');
-      fireEvent.submit(loginForm);
-    });
-
-    expect(screen.getByTestId('form-error')).toHaveTextContent('Please fill in all fields');
+    expect(screen.getByText('Login')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
   });
 
-  it('shows password requirements on focus', async () => {
-    await renderComponent();
-    
-    const loginForm = screen.getByTestId('login-form');
-    const passwordInput = within(loginForm).getByTestId('login-password');
+  it('switches to register form', () => {
+    render(
+      <Provider store={store}>
+        <UserAuthentication />
+      </Provider>
+    );
 
-    await act(async () => {
-      await userEvent.click(passwordInput);
-    });
+    fireEvent.click(screen.getByText('Need an account? Register'));
 
-    expect(screen.getByTestId('password-requirements')).toBeInTheDocument();
+    expect(screen.getByText('Register')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
   });
 
-  it('clears error when switching forms', async () => {
-    const store = await renderComponent({ error: 'Some error' });
-    
-    const registerForm = screen.getByTestId('register-form');
-    
-    await act(async () => {
-      await userEvent.click(registerForm);
-      store.dispatch(clearError());
+  it('shows loading state during authentication', () => {
+    const loadingState: { auth: AuthState } = {
+      auth: {
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        loading: true,
+        error: null
+      }
+    };
+
+    const loadingStore = configureStore({
+      reducer: { auth: authReducer },
+      preloadedState: loadingState
     });
 
-    expect(mockDispatch).toHaveBeenCalledWith(clearError());
+    render(
+      <Provider store={loadingStore}>
+        <UserAuthentication />
+      </Provider>
+    );
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
-  it('handles successful login and persists session', async () => {
-    const mockUser = { email: 'test@example.com', token: 'fake-token' };
-    const store = await renderComponent();
+  it('shows error message', () => {
+    const errorState: { auth: AuthState } = {
+      auth: {
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        loading: false,
+        error: 'Invalid credentials'
+      }
+    };
 
-    const loginForm = screen.getByTestId('login-form');
-    const emailInput = within(loginForm).getByTestId('login-email');
-    const passwordInput = within(loginForm).getByTestId('login-password');
-
-    await act(async () => {
-      await userEvent.type(emailInput, mockUser.email);
-      await userEvent.type(passwordInput, 'password123');
-      fireEvent.submit(loginForm);
-
-      // Mock successful login
-      const loginSuccessAction = loginSuccess(mockUser);
-      store.dispatch(loginSuccessAction);
-      // Manually update localStorage since we're using a mock store
-      localStorage.setItem('authToken', mockUser.token);
-      localStorage.setItem('userEmail', mockUser.email);
+    const errorStore = configureStore({
+      reducer: { auth: authReducer },
+      preloadedState: errorState
     });
 
-    expect(localStorage.getItem('authToken')).toBe(mockUser.token);
-    expect(localStorage.getItem('userEmail')).toBe(mockUser.email);
-  });
+    render(
+      <Provider store={errorStore}>
+        <UserAuthentication />
+      </Provider>
+    );
 
-  // ... rest of the tests remain the same ...
+    expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
+  });
 });

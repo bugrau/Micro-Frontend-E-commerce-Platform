@@ -1,6 +1,19 @@
+/// <reference types="@testing-library/jest-dom" />
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import ErrorMessage from '../ErrorMessage';
+
+// Extend expect with jest-dom matchers
+declare global {
+  namespace jest {
+    interface Expect {
+      toBeInTheDocument(): void;
+      toHaveClass(className: string): void;
+      toHaveBeenCalledTimes(n: number): void;
+    }
+  }
+}
 
 describe('ErrorMessage', () => {
   const mockOnRetry = jest.fn();
@@ -10,9 +23,8 @@ describe('ErrorMessage', () => {
   });
 
   it('renders error message', () => {
-    const message = 'Test error message';
-    render(<ErrorMessage message={message} />);
-    expect(screen.getByText(message)).toBeInTheDocument();
+    render(<ErrorMessage message="Test error message" />);
+    expect(screen.getByText('Test error message')).toBeInTheDocument();
   });
 
   it('calls retryAction when retry button is clicked', () => {

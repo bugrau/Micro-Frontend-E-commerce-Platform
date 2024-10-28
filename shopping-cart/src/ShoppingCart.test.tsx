@@ -4,20 +4,22 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import ShoppingCart from './ShoppingCart';
 import { mockUseSelector, mockDispatch } from '../../jest.setup';
-import { removeFromCart, updateQuantity, clearCart } from './cartSlice';
 
 const mockStore = configureStore([]);
 
+// Update mock to use actions
 jest.mock('./cartSlice', () => ({
-  removeFromCart: (id: number) => ({ type: 'cart/removeFromCart', payload: id }),
-  updateQuantity: (data: { id: number; quantity: number }) => ({ type: 'cart/updateQuantity', payload: data }),
-  clearCart: () => ({ type: 'cart/clearCart' })
+  actions: {
+    removeFromCart: (id: number) => ({ type: 'cart/removeFromCart', payload: id }),
+    updateQuantity: (data: { id: number; quantity: number }) => ({ type: 'cart/updateQuantity', payload: data }),
+    clearCart: () => ({ type: 'cart/clearCart' })
+  }
 }));
 
 describe('ShoppingCart', () => {
   const mockItems = [
-    { id: 1, name: 'Item 1', price: 10, quantity: 2 },
-    { id: 2, name: 'Item 2', price: 20, quantity: 1 },
+    { id: 1, name: 'Item 1', price: 10, quantity: 2, imageUrl: 'test.jpg', stock: 5 },
+    { id: 2, name: 'Item 2', price: 20, quantity: 1, imageUrl: 'test.jpg', stock: 3 },
   ];
 
   beforeEach(() => {

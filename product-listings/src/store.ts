@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import productsReducer from './productsSlice';
+import productReducer from './productSlice';
+import { cartReducer } from 'shopping-cart/cartSlice';
 
+// Create store without async initialization
 export const store = configureStore({
   reducer: {
-    products: productsReducer
+    products: productReducer,
+    cart: cartReducer
   }
 });
 

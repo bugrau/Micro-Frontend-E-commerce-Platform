@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src"
+    ],
+    "types": [],
+    "outDir": "./dist"
+  },
+  "include": [
+    "src",
+    "src/setupTests.ts",
+    "src/__tests__",
+    "node_modules/@testing-library/jest-dom/extend-expect.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

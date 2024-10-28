@@ -1,0 +1,13 @@
+/* Add any global styles for user authentication */
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 14px;
+}

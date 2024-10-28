@@ -2,31 +2,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   "compilerOptions": {
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -34,31 +10,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     "lib": ["dom", "dom.iterable", "esnext"],
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -66,31 +18,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     "skipLibCheck": true,
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -98,31 +26,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     "allowSyntheticDefaultImports": true,
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -130,31 +34,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     "forceConsistentCasingInFileNames": true,
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -162,31 +42,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     "module": "esnext",
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -194,31 +50,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     "resolveJsonModule": true,
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -226,31 +58,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    "noEmit": true,
-
-
-
-
-
-
-
-
-
-
-
-
+    "noEmit": false,
 
 
 
@@ -258,143 +66,23 @@
 
 
 
+    "typeRoots": [
 
 
 
+      "./node_modules/@types",
 
 
 
+      "./src/types"
 
 
 
+    ],
 
 
 
-    "baseUrl": ".",
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    "paths": {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      "product-listings/*": ["../product-listings/src/*"],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      "shopping-cart/*": ["../shopping-cart/src/*"],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      "user-authentication/*": ["../user-authentication/src/*"],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      "order-history/*": ["../order-history/src/*"],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      "common/*": ["../common/*"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
+    "types": ["node", "jest"]
 
 
 
@@ -402,67 +90,27 @@
 
 
 
+  "include": [
 
 
 
+    "src",
 
 
 
+    "src/types"
 
 
 
+  ],
 
 
 
-  "include": ["src"]
-
-
-
-
-
-
-
-
-
-
-
-
+  "exclude": ["node_modules"]
 
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

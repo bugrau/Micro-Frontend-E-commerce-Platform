@@ -1,4 +1,10 @@
+declare module 'user-authentication/UserAuthentication' {
+  const UserAuthentication: React.ComponentType;
+  export default UserAuthentication;
+}
+
 declare module 'user-authentication/authSlice' {
-  const authReducer: any;
+  import { Reducer } from '@reduxjs/toolkit';
+  const authReducer: Reducer;
   export default authReducer;
 }
